@@ -20,21 +20,24 @@ export default function FullscreenView({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 bg-cream z-[9999] flex flex-col overflow-hidden">
-      <div className="px-4 py-3 bg-dark flex items-center justify-between flex-shrink-0">
-        <span className="font-serif text-gold text-[15px] tracking-wide">{title}</span>
+    <div
+      className="fixed inset-0 z-[9999] flex flex-col overflow-hidden"
+      style={{ background: "linear-gradient(160deg, #F5E0D0 0%, #F7EDE4 40%, #FAF0E8 100%)" }}
+    >
+      <div className="px-4 pt-12 pb-3 flex items-center justify-between flex-shrink-0">
+        <span className="font-sans font-semibold text-navy text-[16px]">{title}</span>
         <div className="flex items-center gap-2">
           {actions}
           <button
             onClick={onClose}
-            className="bg-transparent border-none text-[#4A6480] text-[20px] cursor-pointer px-1 leading-none"
+            className="w-8 h-8 rounded-full bg-white/60 border border-white/80 flex items-center justify-center text-navy/50 text-[16px] cursor-pointer"
           >
             ✕
           </button>
         </div>
       </div>
       {sublabel && (
-        <div className="px-[18px] pt-3 text-[10px] text-muted uppercase tracking-[1px] font-semibold flex-shrink-0">
+        <div className="px-5 pt-1 pb-2 text-[11px] text-muted uppercase tracking-[1px] font-semibold flex-shrink-0">
           {sublabel}
         </div>
       )}
