@@ -54,10 +54,7 @@ export default function AuthPage() {
     >
       {/* Logo */}
       <div className="text-center mb-10">
-        <div className="w-16 h-16 rounded-full bg-white/70 border border-white/80 shadow-sm flex items-center justify-center mx-auto mb-5">
-          <span className="text-gold text-[26px]">◈</span>
-        </div>
-        <h1 className="font-serif text-[38px] font-semibold text-navy tracking-[8px] mb-1">HAVEN</h1>
+        <h1 className="font-sans text-[38px] font-semibold text-navy tracking-[8px] mb-1">HAVEN</h1>
         <p className="text-[13px] text-muted italic">a relationship-aware personal companion</p>
       </div>
 
