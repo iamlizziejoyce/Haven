@@ -56,13 +56,15 @@ export function parseProfileSuggestion(raw: string): {
 }
 
 export function buildApiMessages(messages: Message[]) {
-  return messages.map((m) => {
-    if (m.hidden) {
-      return {
-        role: m.role as "user" | "assistant",
-        content: `[Context from a previous conversation summary: ${m.content}]`,
-      };
-    }
-    return { role: m.role as "user" | "assistant", content: m.content };
-  });
+  // Keep last 80 messages to stay within context limits
+  const recent = messages.slice(-80);
+
+  return recent
+    .map((m) => {
+      const content = m.hidden
+        ? `[Context from a previous conversation summary: ${m.content}]`
+        : m.content;
+      return { role: m.role as "user" | "assistant", content };
+    })
+    .filter((m) => m.content.trim().length > 0); // drop empty messages that cause API errors
 }
