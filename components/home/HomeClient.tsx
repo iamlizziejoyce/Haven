@@ -152,7 +152,7 @@ export default function HomeClient({ displayName, initialPeople, messageCounts, 
         </div>
 
         {/* Big greeting */}
-        <h1 className="font-sans text-[42px] font-semibold text-navy leading-[1.1] mb-1">
+        <h1 className="font-sans text-[42px] font-bold text-gold leading-[1.1] mb-1">
           {greeting(displayName)}
         </h1>
         <p className="text-[14px] text-muted">
