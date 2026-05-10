@@ -5,7 +5,6 @@ import "./globals.css";
 const dmSans = DM_Sans({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-dm-sans",
 });
 
 export const metadata: Metadata = {
@@ -23,8 +22,8 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={dmSans.variable}>
-      <body className="font-sans bg-dark">{children}</body>
+    <html lang="en" className={dmSans.className}>
+      <body className="bg-dark">{children}</body>
     </html>
   );
 }
