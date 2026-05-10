@@ -22,7 +22,7 @@ const config: Config = {
         "warm-bg": "#F7EDE4",
       },
       fontFamily: {
-        sans: ["DM Sans", "sans-serif"],
+        sans: ["var(--font-dm-sans)", "sans-serif"],
       },
       borderRadius: {
         "2xl": "1rem",
