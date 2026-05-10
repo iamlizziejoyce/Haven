@@ -4,7 +4,8 @@ export function buildSystemPrompt(
   userName: string,
   personName: string,
   insights: ProfileInsight[],
-  otherConversations: { personName: string; lastAssistantMessage: string }[]
+  otherConversations: { personName: string; lastAssistantMessage: string }[],
+  linkedInsights?: { category: string; text: string }[]
 ): string {
   let prompt = `You are Haven, a warm and honest relationship-aware companion for ${userName}. You are in a conversation about "${personName}".
 
@@ -28,6 +29,19 @@ Speak in natural flowing sentences. No bullet points. Ask only one question at a
       prompt += `In the conversation about "${c.personName}": ${c.lastAssistantMessage.substring(0, 200)}\n`;
     });
     prompt += `\nWhen relevant, explicitly reference these: "In your conversation about [person] you mentioned..."`;
+  }
+
+  if (linkedInsights && linkedInsights.length > 0) {
+    const grouped: Record<string, string[]> = {};
+    linkedInsights.forEach((i) => {
+      if (!grouped[i.category]) grouped[i.category] = [];
+      grouped[i.category].push(i.text);
+    });
+    prompt += `\n\n${personName} is also a Haven user and has consented to share context. Haven has observed these patterns about ${personName} from their own conversations:\n`;
+    Object.entries(grouped).forEach(([cat, texts]) => {
+      prompt += `${cat}: ${texts.join("; ")}\n`;
+    });
+    prompt += `Use this to inform your understanding of the relationship. Weave it in naturally — never quote it directly, never tell ${userName} that ${personName} "said" anything specific, and only reference it when genuinely relevant.`;
   }
 
   prompt += `\n\nPROFILE DETECTION: If something genuinely significant has emerged about ${userName}, end your response with:

@@ -86,11 +86,39 @@ export async function POST(request: NextRequest) {
     }
   }
 
+  // Check for linked account whose display_name matches person.name
+  let linkedInsights: { category: string; text: string }[] = [];
+  const { data: links } = await supabase
+    .from("account_links")
+    .select("requester_id, recipient_id")
+    .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
+    .eq("status", "accepted");
+
+  if (links?.length) {
+    for (const link of links) {
+      const linkedUserId = link.requester_id === user.id ? link.recipient_id : link.requester_id;
+      const { data: linkedProfile } = await supabase
+        .from("profiles")
+        .select("display_name")
+        .eq("id", linkedUserId)
+        .single();
+      if (linkedProfile?.display_name?.toLowerCase() === person.name.toLowerCase()) {
+        const { data: li } = await supabase
+          .from("profile_insights")
+          .select("category, text")
+          .eq("user_id", linkedUserId);
+        linkedInsights = li ?? [];
+        break;
+      }
+    }
+  }
+
   const systemPrompt = buildSystemPrompt(
     userName,
     person.name,
     insights ?? [],
-    otherConversations
+    otherConversations,
+    linkedInsights.length ? linkedInsights : undefined
   );
 
   const apiMessages = buildApiMessages((messages ?? []) as Message[]);

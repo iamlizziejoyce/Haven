@@ -41,12 +41,30 @@ export default async function HomePage() {
     }
   }
 
+  // Pending incoming link requests
+  const { data: pendingLinks } = await supabase
+    .from("account_links")
+    .select("id, requester_id")
+    .eq("recipient_id", user.id)
+    .eq("status", "pending");
+
+  const pendingRequests: { id: string; name: string }[] = [];
+  for (const link of pendingLinks ?? []) {
+    const { data: rp } = await supabase
+      .from("profiles")
+      .select("display_name")
+      .eq("id", link.requester_id)
+      .single();
+    pendingRequests.push({ id: link.id, name: rp?.display_name ?? "Someone" });
+  }
+
   return (
     <HomeClient
       displayName={profile?.display_name ?? "there"}
       initialPeople={people ?? []}
       messageCounts={messageCounts}
       initialInsights={insights ?? []}
+      pendingRequests={pendingRequests}
     />
   );
 }

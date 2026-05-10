@@ -14,6 +14,7 @@ interface Props {
   initialPeople: Person[];
   messageCounts: Record<string, number>;
   initialInsights: ProfileInsight[];
+  pendingRequests: { id: string; name: string }[];
 }
 
 function formatDate(ts: string) {
@@ -33,7 +34,7 @@ function greeting(name: string) {
   return `Evening, ${name}`;
 }
 
-export default function HomeClient({ displayName, initialPeople, messageCounts, initialInsights }: Props) {
+export default function HomeClient({ displayName, initialPeople, messageCounts, initialInsights, pendingRequests: initialPendingRequests }: Props) {
   const router = useRouter();
 
   const [people, setPeople] = useState<Person[]>(initialPeople);
@@ -57,6 +58,12 @@ export default function HomeClient({ displayName, initialPeople, messageCounts, 
 
   const [profileOpen, setProfileOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
+
+  const [connectOpen, setConnectOpen] = useState(false);
+  const [connectEmail, setConnectEmail] = useState("");
+  const [connectLoading, setConnectLoading] = useState(false);
+
+  const [pendingRequests, setPendingRequests] = useState(initialPendingRequests);
 
   const [toast, setToast] = useState("");
 
@@ -116,6 +123,32 @@ export default function HomeClient({ displayName, initialPeople, messageCounts, 
     setToast("Summary imported.");
   }
 
+  async function handleConnect() {
+    if (!connectEmail.trim() || connectLoading) return;
+    setConnectLoading(true);
+    const res = await fetch("/api/links", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: connectEmail.trim() }),
+    });
+    const data = await res.json();
+    setConnectLoading(false);
+    if (!res.ok) { setToast(data.error ?? "Something went wrong."); return; }
+    setConnectOpen(false);
+    setConnectEmail("");
+    setToast(`Request sent to ${data.recipientName}.`);
+  }
+
+  async function handleLinkResponse(id: string, action: "accept" | "reject") {
+    await fetch(`/api/links/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action }),
+    });
+    setPendingRequests((prev) => prev.filter((r) => r.id !== id));
+    if (action === "accept") setToast("Connected!");
+  }
+
   async function handleSignOut() {
     const supabase = createClient();
     await supabase.auth.signOut();
@@ -145,6 +178,9 @@ export default function HomeClient({ displayName, initialPeople, messageCounts, 
             <button onClick={() => setAboutOpen(true)} className="text-[12px] text-navy/50 font-medium">
               About
             </button>
+            <button onClick={() => { setConnectEmail(""); setConnectOpen(true); }} className="text-[12px] text-navy/50 font-medium">
+              Connect
+            </button>
             <button onClick={handleSignOut} className="text-[12px] text-navy/50 font-medium">
               Sign out
             </button>
@@ -161,6 +197,21 @@ export default function HomeClient({ displayName, initialPeople, messageCounts, 
             : "Who's on your mind?"}
         </p>
       </div>
+
+      {/* Pending connection requests */}
+      {pendingRequests.length > 0 && (
+        <div className="px-4 pb-2 flex flex-col gap-2">
+          {pendingRequests.map((req) => (
+            <div key={req.id} className="bg-white/70 backdrop-blur border border-white/80 rounded-[16px] px-4 py-3 flex items-center justify-between shadow-sm">
+              <p className="text-[13px] text-navy font-medium"><span className="font-semibold">{req.name}</span> wants to connect on Haven</p>
+              <div className="flex gap-2 ml-3 flex-shrink-0">
+                <button onClick={() => handleLinkResponse(req.id, "accept")} className="text-[12px] font-semibold text-white bg-navy rounded-full px-3 py-1">Accept</button>
+                <button onClick={() => handleLinkResponse(req.id, "reject")} className="text-[12px] font-semibold text-muted bg-cream border border-mid rounded-full px-3 py-1">Decline</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* People list */}
       <div className="flex-1 px-4 pb-4 flex flex-col gap-3">
@@ -291,6 +342,36 @@ export default function HomeClient({ displayName, initialPeople, messageCounts, 
         <div className="flex gap-2.5 px-5" style={{ paddingBottom: "calc(20px + env(safe-area-inset-bottom, 0px))" }}>
           <button onClick={() => setImportOpen(false)} className="flex-1 py-3.5 rounded-[14px] bg-cream text-muted border border-mid text-[14px] font-semibold font-sans">Cancel</button>
           <button onClick={handleImport} disabled={!importText.trim()} className="flex-1 py-3.5 rounded-[14px] bg-navy text-white text-[14px] font-semibold font-sans disabled:bg-mid disabled:text-muted">Save</button>
+        </div>
+      </Sheet>
+
+      {/* Connect Sheet */}
+      <Sheet open={connectOpen} onClose={() => setConnectOpen(false)}>
+        <h2 className="text-[17px] font-semibold text-navy mb-1 px-5">Connect with someone</h2>
+        <p className="text-[13px] text-muted px-5 mb-4 leading-snug">Enter their email address. If they have a Haven account, they'll get a request to connect. Once accepted, Haven will use shared context to give you both more informed support.</p>
+        <div className="px-5 mb-3">
+          <input
+            type="email"
+            value={connectEmail}
+            onChange={(e) => setConnectEmail(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && connectEmail.trim() && handleConnect()}
+            placeholder="Their email address"
+            autoComplete="off"
+            className="w-full px-4 py-3.5 border-[1.5px] border-mid rounded-[14px] text-[16px] text-navy font-sans bg-cream focus:border-navy placeholder-muted"
+            autoFocus
+          />
+        </div>
+        <div className="flex gap-2.5 px-5" style={{ paddingBottom: "calc(20px + env(safe-area-inset-bottom, 0px))" }}>
+          <button onClick={() => setConnectOpen(false)} className="flex-1 py-3.5 rounded-[14px] bg-cream text-muted border border-mid text-[14px] font-semibold font-sans">
+            Cancel
+          </button>
+          <button
+            onClick={handleConnect}
+            disabled={!connectEmail.trim() || connectLoading}
+            className="flex-1 py-3.5 rounded-[14px] bg-navy text-white text-[14px] font-semibold font-sans disabled:bg-mid disabled:text-muted"
+          >
+            {connectLoading ? "…" : "Send request"}
+          </button>
         </div>
       </Sheet>
 
