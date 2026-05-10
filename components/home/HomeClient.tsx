@@ -135,7 +135,7 @@ export default function HomeClient({ displayName, initialPeople, messageCounts, 
         {/* Brand mark */}
         <div className="flex items-center gap-2 mb-8">
           <span className="text-gold text-[16px]">◈</span>
-          <span className="font-serif text-[16px] font-semibold text-navy/60 tracking-[6px]">HAVEN</span>
+          <span className="font-sans text-[16px] font-semibold text-navy/60 tracking-[6px]">HAVEN</span>
           <div className="ml-auto flex gap-3">
             {insights.length > 0 && (
               <button onClick={() => setProfileOpen(true)} className="text-[12px] text-navy/50 font-medium">
@@ -152,7 +152,7 @@ export default function HomeClient({ displayName, initialPeople, messageCounts, 
         </div>
 
         {/* Big greeting */}
-        <h1 className="font-serif text-[42px] font-semibold text-navy leading-[1.1] mb-1">
+        <h1 className="font-sans text-[42px] font-semibold text-navy leading-[1.1] mb-1">
           {greeting(displayName)}
         </h1>
         <p className="text-[14px] text-muted">
@@ -183,7 +183,7 @@ export default function HomeClient({ displayName, initialPeople, messageCounts, 
             >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-peach border border-peach-dark/30 flex items-center justify-center flex-shrink-0">
-                  <span className="font-serif text-[18px] text-navy/70 font-semibold leading-none">
+                  <span className="font-sans text-[18px] text-navy/70 font-semibold leading-none">
                     {p.name.charAt(0).toUpperCase()}
                   </span>
                 </div>

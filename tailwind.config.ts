@@ -23,7 +23,6 @@ const config: Config = {
       },
       fontFamily: {
         sans: ["DM Sans", "sans-serif"],
-        serif: ["Cormorant Garamond", "serif"],
       },
       borderRadius: {
         "2xl": "1rem",

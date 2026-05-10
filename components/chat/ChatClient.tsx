@@ -205,7 +205,7 @@ export default function ChatClient({ person, displayName, initialMessages, initi
           </button>
           <div className="ml-1">
             <p className="text-[11px] text-muted font-medium uppercase tracking-wider">talking about</p>
-            <h1 className="font-serif text-[20px] font-semibold text-navy leading-tight">{person.name}</h1>
+            <h1 className="font-sans text-[20px] font-semibold text-navy leading-tight">{person.name}</h1>
           </div>
         </div>
         <button

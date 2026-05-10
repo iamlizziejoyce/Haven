@@ -12,7 +12,7 @@ export default function HavenLogo({ size = "md", className = "" }: HavenLogoProp
   return (
     <div className={`text-center ${className}`}>
       <span className={`${iconSize} text-gold block mb-2`}>◈</span>
-      <span className={`font-serif ${nameSize} font-semibold text-white block mb-1.5`}>HAVEN</span>
+      <span className={`font-sans ${nameSize} font-semibold text-white block mb-1.5`}>HAVEN</span>
       <span className={`${subSize} text-[#4A6888] italic`}>
         a relationship-aware personal companion
       </span>
