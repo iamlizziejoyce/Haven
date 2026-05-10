@@ -23,11 +23,7 @@ export default function AuthPage() {
 
     try {
       if (mode === "signup") {
-        if (!name.trim()) {
-          setError("Please enter your first name.");
-          setLoading(false);
-          return;
-        }
+        if (!name.trim()) { setError("Please enter your first name."); setLoading(false); return; }
         const { error } = await supabase.auth.signUp({
           email,
           password,
@@ -49,87 +45,76 @@ export default function AuthPage() {
     }
   }
 
-  const canSubmit =
-    email.trim() && password.length >= 6 && (mode === "login" || name.trim()) && !loading;
+  const canSubmit = email.trim() && password.length >= 6 && (mode === "login" || name.trim()) && !loading;
 
   return (
-    <div className="min-h-dvh w-full bg-dark flex flex-col items-center justify-center px-7 py-12">
+    <div
+      className="min-h-dvh w-full flex flex-col items-center justify-center px-6 py-12"
+      style={{ background: "linear-gradient(160deg, #F5E0D0 0%, #F7EDE4 40%, #FAF0E8 100%)" }}
+    >
       {/* Logo */}
-      <div className="text-center mb-11">
-        <span className="text-gold text-[22px] block mb-3">◈</span>
-        <span className="font-serif text-[36px] font-semibold text-white tracking-[10px] block mb-2.5">
-          HAVEN
-        </span>
-        <span className="text-[12px] text-[#4A6888] italic">
-          a relationship-aware personal companion
-        </span>
+      <div className="text-center mb-10">
+        <div className="w-16 h-16 rounded-full bg-white/70 border border-white/80 shadow-sm flex items-center justify-center mx-auto mb-5">
+          <span className="text-gold text-[26px]">◈</span>
+        </div>
+        <h1 className="font-serif text-[38px] font-semibold text-navy tracking-[8px] mb-1">HAVEN</h1>
+        <p className="text-[13px] text-muted italic">a relationship-aware personal companion</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="w-full max-w-[300px]">
-        <p className="text-[13px] text-[#4A6888] text-center mb-5 leading-relaxed">
+      <div className="w-full max-w-[320px] bg-white/70 backdrop-blur rounded-[24px] border border-white/80 shadow-sm px-6 py-7">
+        <p className="text-[14px] text-muted text-center mb-5 leading-relaxed">
           {mode === "login"
-            ? "Welcome back. Sign in to access your conversations."
-            : "Haven is a private space to think through your relationships."}
+            ? "Welcome back. Sign in to your conversations."
+            : "A private space to think through your relationships."}
         </p>
 
-        {mode === "signup" && (
-          <div className="mb-3">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+          {mode === "signup" && (
             <input
               type="text"
               placeholder="Your first name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               autoComplete="given-name"
-              className="w-full px-4 py-3 bg-white/[0.06] border border-white/10 rounded-[9px] text-white text-[16px] font-sans placeholder-[#3A5470] focus:border-gold/50 transition-colors"
+              className="w-full px-4 py-3.5 bg-cream border border-mid rounded-[14px] text-[16px] text-navy font-sans placeholder-muted focus:border-navy/40 transition-colors"
             />
-          </div>
-        )}
-
-        <div className="mb-3">
+          )}
           <input
             type="email"
             placeholder="Email address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             autoComplete="email"
-            className="w-full px-4 py-3 bg-white/[0.06] border border-white/10 rounded-[9px] text-white text-[16px] font-sans placeholder-[#3A5470] focus:border-gold/50 transition-colors"
+            className="w-full px-4 py-3.5 bg-cream border border-mid rounded-[14px] text-[16px] text-navy font-sans placeholder-muted focus:border-navy/40 transition-colors"
           />
-        </div>
-
-        <div className="mb-3">
           <input
             type="password"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             autoComplete={mode === "signup" ? "new-password" : "current-password"}
-            className="w-full px-4 py-3 bg-white/[0.06] border border-white/10 rounded-[9px] text-white text-[16px] font-sans placeholder-[#3A5470] focus:border-gold/50 transition-colors"
+            className="w-full px-4 py-3.5 bg-cream border border-mid rounded-[14px] text-[16px] text-navy font-sans placeholder-muted focus:border-navy/40 transition-colors"
           />
-        </div>
 
-        {error && (
-          <p className="text-[#FF9090] text-[12px] text-center mb-3 leading-snug">{error}</p>
-        )}
+          {error && <p className="text-[#C0392B] text-[12px] text-center leading-snug">{error}</p>}
 
-        <button
-          type="submit"
-          disabled={!canSubmit}
-          className="w-full py-3.5 bg-gold text-dark rounded-[9px] text-[14px] font-semibold disabled:bg-white/[0.08] disabled:text-[#3A5470] disabled:cursor-default transition-colors"
-        >
-          {loading ? "Please wait…" : mode === "login" ? "Sign in" : "Begin"}
-        </button>
+          <button
+            type="submit"
+            disabled={!canSubmit}
+            className="w-full py-4 bg-navy text-white rounded-[14px] text-[15px] font-semibold mt-1 disabled:bg-mid disabled:text-muted/60 disabled:cursor-default transition-colors shadow-sm"
+          >
+            {loading ? "Please wait…" : mode === "login" ? "Sign in" : "Begin"}
+          </button>
+        </form>
 
         <button
           type="button"
-          onClick={() => {
-            setMode(mode === "login" ? "signup" : "login");
-            setError("");
-          }}
-          className="w-full mt-4 text-[12px] text-[#4A6888] hover:text-[#6A88A8] transition-colors"
+          onClick={() => { setMode(mode === "login" ? "signup" : "login"); setError(""); }}
+          className="w-full mt-4 text-[13px] text-muted hover:text-navy/70 transition-colors"
         >
           {mode === "login" ? "New to Haven? Create an account" : "Already have an account? Sign in"}
         </button>
-      </form>
+      </div>
     </div>
   );
 }

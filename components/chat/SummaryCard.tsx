@@ -18,18 +18,19 @@ function formatTime(ts: string) {
 
 export default function SummaryCard({ summary, onView }: Props) {
   return (
-    <div className="w-full px-4 py-2 animate-fadein">
-      <div
+    <div className="flex justify-center my-2 animate-fadein">
+      <button
         onClick={() => onView(summary.content)}
-        className="bg-white border border-mid border-l-[3px] border-l-gold rounded-[10px] px-3.5 py-3 cursor-pointer active:bg-[#F0EDE8]"
+        className="max-w-[85%] bg-white/70 backdrop-blur border border-white/80 rounded-[18px] px-4 py-3 shadow-sm text-left active:bg-white/90 transition-colors"
       >
-        <div className="flex items-center justify-between mb-1">
-          <span className="text-[12px] font-bold text-gold tracking-[0.5px] uppercase">◎ Summary</span>
-          <span className="text-[11px] text-muted">{formatTime(summary.created_at)}</span>
+        <div className="flex items-center gap-1.5 mb-1.5">
+          <span className="text-gold text-[12px]">◎</span>
+          <span className="text-[11px] font-semibold text-gold uppercase tracking-wider">Summary</span>
+          <span className="text-[10px] text-muted ml-auto pl-2">{formatTime(summary.created_at)}</span>
         </div>
-        <p className="text-[13px] text-navy leading-[1.5] opacity-70 line-clamp-2">{summary.content}</p>
-        <p className="text-[11px] text-gold mt-2 font-medium">Tap to view →</p>
-      </div>
+        <p className="text-[13px] text-navy/70 leading-[1.5] line-clamp-2">{summary.content}</p>
+        <p className="text-[11px] text-gold mt-1.5 font-medium">Tap to view →</p>
+      </button>
     </div>
   );
 }
