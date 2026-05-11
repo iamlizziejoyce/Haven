@@ -24,12 +24,18 @@ export default function AuthPage() {
     try {
       if (mode === "signup") {
         if (!name.trim()) { setError("Please enter your first name."); setLoading(false); return; }
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: { data: { display_name: name.trim() } },
         });
         if (error) throw error;
+        // If session is null, email confirmation is required
+        if (!data.session) {
+          setError("Check your email and click the confirmation link to finish signing up.");
+          setLoading(false);
+          return;
+        }
         router.push("/home");
         router.refresh();
       } else {
