@@ -58,6 +58,24 @@ export default async function HomePage() {
     pendingRequests.push({ id: link.id, name: rp?.display_name ?? "Someone" });
   }
 
+  // Accepted linked accounts — resolve their display names
+  const { data: acceptedLinks } = await supabase
+    .from("account_links")
+    .select("requester_id, recipient_id")
+    .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
+    .eq("status", "accepted");
+
+  const connectedNames: string[] = [];
+  for (const link of acceptedLinks ?? []) {
+    const linkedId = link.requester_id === user.id ? link.recipient_id : link.requester_id;
+    const { data: lp } = await supabase
+      .from("profiles")
+      .select("display_name")
+      .eq("id", linkedId)
+      .single();
+    if (lp?.display_name) connectedNames.push(lp.display_name.toLowerCase());
+  }
+
   return (
     <HomeClient
       displayName={profile?.display_name ?? "there"}
@@ -65,6 +83,7 @@ export default async function HomePage() {
       messageCounts={messageCounts}
       initialInsights={insights ?? []}
       pendingRequests={pendingRequests}
+      connectedNames={connectedNames}
     />
   );
 }

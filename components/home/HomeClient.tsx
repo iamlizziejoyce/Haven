@@ -15,6 +15,7 @@ interface Props {
   messageCounts: Record<string, number>;
   initialInsights: ProfileInsight[];
   pendingRequests: { id: string; name: string }[];
+  connectedNames: string[];
 }
 
 function formatDate(ts: string) {
@@ -34,7 +35,7 @@ function greeting(name: string) {
   return `Evening, ${name}`;
 }
 
-export default function HomeClient({ displayName, initialPeople, messageCounts, initialInsights, pendingRequests: initialPendingRequests }: Props) {
+export default function HomeClient({ displayName, initialPeople, messageCounts, initialInsights, pendingRequests: initialPendingRequests, connectedNames }: Props) {
   const router = useRouter();
 
   const [people, setPeople] = useState<Person[]>(initialPeople);
@@ -226,14 +227,16 @@ export default function HomeClient({ displayName, initialPeople, messageCounts, 
             </p>
           </div>
         ) : (
-          people.map((p) => (
+          people.map((p) => {
+            const isConnected = connectedNames.includes(p.name.toLowerCase());
+            return (
             <div
               key={p.id}
               onClick={() => router.push(`/chat/${p.id}`)}
               className="bg-white/65 backdrop-blur border border-white/80 rounded-[20px] px-5 py-4 cursor-pointer flex items-center justify-between shadow-sm active:bg-white/80 transition-colors"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-peach border border-peach-dark/30 flex items-center justify-center flex-shrink-0">
+                <div className={`w-10 h-10 rounded-full bg-peach flex items-center justify-center flex-shrink-0 ${isConnected ? "ring-2 ring-gold/60 ring-offset-1" : "border border-peach-dark/30"}`}>
                   <span className="font-sans text-[18px] text-navy/70 font-semibold leading-none">
                     {p.name.charAt(0).toUpperCase()}
                   </span>
@@ -241,8 +244,10 @@ export default function HomeClient({ displayName, initialPeople, messageCounts, 
                 <div>
                   <p className="text-[15px] font-semibold text-navy">{p.name}</p>
                   <p className="text-[12px] text-muted mt-0.5">
-                    {p.updated_at ? `${formatDate(p.updated_at)} · ` : ""}
-                    {counts[p.id] ?? 0} messages
+                    {isConnected
+                      ? <><span className="text-gold font-medium">connected · </span>{counts[p.id] ?? 0} messages</>
+                      : <>{p.updated_at ? `${formatDate(p.updated_at)} · ` : ""}{counts[p.id] ?? 0} messages</>
+                    }
                   </p>
                 </div>
               </div>
@@ -253,7 +258,8 @@ export default function HomeClient({ displayName, initialPeople, messageCounts, 
                 ···
               </button>
             </div>
-          ))
+            );
+          })
         )}
       </div>
 
